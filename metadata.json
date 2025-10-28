@@ -1,0 +1,5 @@
+{
+  "name": "CPT V1",
+  "description": "An application to select a running training plan, track your progress, log workout data, monitor weight evolution, and stay motivated with gamification features.",
+  "requestFramePermissions": []
+}
