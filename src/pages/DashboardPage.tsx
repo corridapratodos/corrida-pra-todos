@@ -1,10 +1,14 @@
 import React, { useMemo, useState, useEffect, useCallback } from 'react';
-import { useAuth } from '@/contexts/AuthContext';
-import { Link } from 'react-router-dom';
-import { TRAINING_PLANS } from '@/constants';
-import { WorkoutLog, Achievement, DailyWorkout } from '@/types';
-import LogWorkoutModal from '@/components/LogWorkoutModal';
-import { useToaster } from '@/components/Toaster';
+// FIX: Use relative paths and file extensions for imports to fix module resolution errors.
+import { useAuth } from '../contexts/AuthContext.tsx';
+// FIX: The following import fails to resolve named exports from react-router-dom.
+// Using a namespace import as a workaround for potential module resolution issues.
+import * as ReactRouterDOM from 'react-router-dom';
+import { TRAINING_PLANS } from '../constants.ts';
+import { WorkoutLog, Achievement, DailyWorkout } from '../types.ts';
+import LogWorkoutModal from '../components/LogWorkoutModal.tsx';
+import { useToaster } from '../components/Toaster.tsx';
+import AICoach from '../components/AICoach.tsx';
 
 const StatCard: React.FC<{ title: string; value: string; icon: string }> = ({ title, value, icon }) => (
   <div className="bg-dark-card p-4 rounded-xl flex items-center space-x-4 shadow-lg">
@@ -149,36 +153,39 @@ const DashboardPage: React.FC = () => {
       </div>
       
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        <div className="lg:col-span-2 bg-dark-card p-6 rounded-xl shadow-lg">
-            <h3 className="text-xl font-bold">Seu Plano: {plan.name}</h3>
-            <ProgressBar value={progressionPercentage} />
-            <h3 className="text-xl font-bold mb-4 mt-6">Semana {currentWeek}: Foco e Força</h3>
-            <div className="space-y-3">
-                {weekData?.workouts.map(workout => {
-                    const workoutDate = new Date(startDate);
-                    workoutDate.setDate(startDate.getDate() + (currentWeek - 1) * 7 + workout.day - 1);
-                    const dateString = workoutDate.toISOString().split('T')[0];
-                    const log = logs.find(l => l.date === dateString);
-                    const isToday = new Date().toISOString().split('T')[0] === dateString;
+        <div className="lg:col-span-2 space-y-8">
+          <div className="bg-dark-card p-6 rounded-xl shadow-lg">
+              <h3 className="text-xl font-bold">Seu Plano: {plan.name}</h3>
+              <ProgressBar value={progressionPercentage} />
+              <h3 className="text-xl font-bold mb-4 mt-6">Semana {currentWeek}: Foco e Força</h3>
+              <div className="space-y-3">
+                  {weekData?.workouts.map(workout => {
+                      const workoutDate = new Date(startDate);
+                      workoutDate.setDate(startDate.getDate() + (currentWeek - 1) * 7 + workout.day - 1);
+                      const dateString = workoutDate.toISOString().split('T')[0];
+                      const log = logs.find(l => l.date === dateString);
+                      const isToday = new Date().toISOString().split('T')[0] === dateString;
 
-                    return (
-                        <div 
-                            key={workout.day} 
-                            className={`flex items-center justify-between p-4 rounded-lg border-l-4 cursor-pointer transition-all duration-200 ${log?.completed ? 'border-green-500 bg-green-500/10 hover:bg-green-500/20' : 'border-dark-border bg-dark-bg/50 hover:bg-dark-border/50'} ${isToday ? 'ring-2 ring-brand-primary' : ''}`}
-                            onClick={() => setSelectedWorkout({ workout, date: dateString })}
-                        >
-                            <div>
-                                <p className="font-bold">{workout.dayName}</p>
-                                <p className="text-sm text-medium-text">{workout.activity}</p>
-                            </div>
-                            {log?.completed && <CheckCircleIcon className="h-6 w-6 text-green-400" />}
-                        </div>
-                    );
-                })}
-            </div>
-            <Link to="/plan" className="mt-6 inline-block w-full text-center bg-brand-primary text-white font-bold py-2 px-4 rounded-lg hover:bg-brand-secondary transition-colors">
-                Ver Plano Completo
-            </Link>
+                      return (
+                          <div 
+                              key={workout.day} 
+                              className={`flex items-center justify-between p-4 rounded-lg border-l-4 cursor-pointer transition-all duration-200 ${log?.completed ? 'border-green-500 bg-green-500/10 hover:bg-green-500/20' : 'border-dark-border bg-dark-bg/50 hover:bg-dark-border/50'} ${isToday ? 'ring-2 ring-brand-primary' : ''}`}
+                              onClick={() => setSelectedWorkout({ workout, date: dateString })}
+                          >
+                              <div>
+                                  <p className="font-bold">{workout.dayName}</p>
+                                  <p className="text-sm text-medium-text">{workout.activity}</p>
+                              </div>
+                              {log?.completed && <CheckCircleIcon className="h-6 w-6 text-green-400" />}
+                          </div>
+                      );
+                  })}
+              </div>
+              <ReactRouterDOM.Link to="/plan" className="mt-6 inline-block w-full text-center bg-brand-primary text-white font-bold py-2 px-4 rounded-lg hover:bg-brand-secondary transition-colors">
+                  Ver Plano Completo
+              </ReactRouterDOM.Link>
+          </div>
+          <AICoach user={user} logs={logs} />
         </div>
         
         <div className="bg-dark-card p-6 rounded-xl shadow-lg">
