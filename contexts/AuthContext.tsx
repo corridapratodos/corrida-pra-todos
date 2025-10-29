@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { User, PlanId, WorkoutLog, WeightEntry } from '../types';
-import { supabase } from '../supabaseClient';
+import { User, PlanId, WorkoutLog, WeightEntry } from '@/types';
+import { supabase } from '@/supabaseClient';
 import { Session, AuthError } from '@supabase/supabase-js';
 
 interface SignUpData {
@@ -93,10 +93,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       if (error) return { error };
 
       if (authData.user) {
+          // Converte a data de nascimento de DD/MM/YYYY para YYYY-MM-DD
+          const [day, month, year] = dob.split('/');
+          const isoDob = `${year}-${month}-${day}`;
+
           const { error: profileError } = await supabase.from('profiles').insert({
               id: authData.user.id,
               name,
-              dob,
+              dob: isoDob, // Usa o formato ISO
               sex,
               height,
           });
